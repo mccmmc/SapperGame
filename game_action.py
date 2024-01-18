@@ -36,15 +36,15 @@ class Board:
                     width=1
                 )
 
-                if self.board[y][x] == 10:  # bomb render
-                    self.screen.fill(color='blue',
-                                     rect=(
-                                         self.left + self.cell_size * x + 1,
-                                         self.top + self.cell_size * y + 1,
-                                         self.cell_size - 2,
-                                         self.cell_size - 2,
-                                     )
-                                     )
+                # if self.board[y][x] == 10:  # bomb render
+                #     self.screen.fill(color='blue',
+                #                      rect=(
+                #                          self.left + self.cell_size * x + 1,
+                #                          self.top + self.cell_size * y + 1,
+                #                          self.cell_size - 2,
+                #                          self.cell_size - 2,
+                #                      )
+                #                      )
 
     def get_cell(self, mouse_pos):
         mx, my = mouse_pos
@@ -79,6 +79,7 @@ class Sapper(Board):
 
         self.font = pygame.font.Font(None, 30)
         self.game_status = True
+        self.game_final = False
         self.max_bomb = max_bomb
 
         self.reset_board()
@@ -99,12 +100,20 @@ class Sapper(Board):
                         bomb_counter += 1
 
     def render(self):
+        close_count = 0
+
         super().render()
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
                 if 10 > self.board[y][x] >= 0:
                     self.screen.blit(self.font.render(str(self.board[y][x]), True, (255, 255, 255)),
                                      (self.left + self.cell_size * x + 1, self.top + self.cell_size * y + 1))
+                if self.board[y][x] == -1:
+                    close_count += 1
+
+        if close_count == 0:
+            self.game_status = False
+            self.game_final = True
 
     def open_cell(self, mouse_pos):
         try:
@@ -156,9 +165,9 @@ class Sapper(Board):
         return cells
 
 
-def game(surface):
+def game(surface, bomb):
     n = 12
-    max_bomb = 36
+    max_bomb = bomb
 
     sapper_game = Sapper(surface, n, n, max_bomb)
     sapper_game.set_view(50, 50, 250 // n)
@@ -174,7 +183,7 @@ def game(surface):
                 sapper_game.open_cell(event.pos)
 
         if not sapper_game.game_status:
-            return
+            return sapper_game.game_final
 
         surface.fill('black')
         sapper_game.render()
