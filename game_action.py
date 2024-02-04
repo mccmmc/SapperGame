@@ -39,18 +39,18 @@ class Board:
                     width=1
                 )
 
-                # if self.board[y][x] == 10:  # bomb render
-                #
-                #     self.screen.fill(color='blue',
-                #                      rect=(
-                #
-                #                          self.left + self.cell_size * x + 1,
-                #                          self.top + self.cell_size * y + 1,
-                #                          self.cell_size - 2,
-                #                          self.cell_size - 2,
-                #
-                #                      )
-                #                      )
+                if self.board[y][x] == 10:  # bomb render
+
+                    self.screen.fill(color='blue',
+                                     rect=(
+
+                                         self.left + self.cell_size * x + 1,
+                                         self.top + self.cell_size * y + 1,
+                                         self.cell_size - 2,
+                                         self.cell_size - 2,
+
+                                     )
+                                     )
 
     def get_cell(self, mouse_pos):
         mx, my = mouse_pos

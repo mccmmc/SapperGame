@@ -58,26 +58,26 @@ class Hard(pygame.sprite.Sprite):
 
 
 def main_menu(surface):
-    intro_text = ["Это бетка, cделанная для защиты,",
-                  "Я сильно не успеваю,",
-                  "Итоговый код скину позже,",
-                  "Извините :("]
+    # intro_text = ["Это бетка, cделанная для защиты,",
+    #               "Я сильно не успеваю,",
+    #               "Итоговый код скину позже,",
+    #               "Извините :("]
 
     background_img = pygame.transform.scale(pygame.image.load(r'./data/menu.png'), SCREEN_SIZE)
     font_obj = pygame.font.Font(None, 20)
     surface.blit(background_img, (0, 0))
     text_coord = 5
 
-    for line in intro_text:
-        string_rendered = font_obj.render(line, 1, pygame.Color('black'))
-        intro_rect = string_rendered.get_rect()
-
-        text_coord += 5
-        intro_rect.top = text_coord
-
-        intro_rect.x = 5
-        text_coord += intro_rect.height
-        surface.blit(string_rendered, intro_rect)
+    # for line in intro_text:
+    #     string_rendered = font_obj.render(line, 1, pygame.Color('black'))
+    #     intro_rect = string_rendered.get_rect()
+    #
+    #     text_coord += 5
+    #     intro_rect.top = text_coord
+    #
+    #     intro_rect.x = 5
+    #     text_coord += intro_rect.height
+    #     surface.blit(string_rendered, intro_rect)
 
     all_sprites = pygame.sprite.Group()
 
