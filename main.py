@@ -14,8 +14,17 @@ running = True
 
 while running:
     bombs = main_menu(screen)
-    result = game(screen, bombs)
+    result, score = game(screen, bombs)
+
+    with open('best_result.txt', 'w', encoding='utf8') as file:
+
+        print(f'Прошлый результат {score}! \n'
+              f'Отлично! Класс! Супер круто! \n'
+              f'Молодец! Так держать! \n'
+              f'Умничка! Ты реально крут! \n', file=file)
+
     if result:
-        win(screen)
+        win(screen, score)
+
     else:
-        wasted(screen)
+        wasted(screen, score)

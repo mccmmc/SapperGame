@@ -2,7 +2,7 @@ import random
 
 import pygame
 
-from utils import FPS, terminate
+from utils import FPS, terminate, load_image
 
 
 class Board:
@@ -24,25 +24,31 @@ class Board:
     def render(self):
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
+
                 pygame.draw.rect(
                     surface=self.screen,
                     color='white',
                     rect=(
+
                         self.left + self.cell_size * x,
                         self.top + self.cell_size * y,
                         self.cell_size,
                         self.cell_size,
+
                     ),
                     width=1
                 )
 
                 # if self.board[y][x] == 10:  # bomb render
+                #
                 #     self.screen.fill(color='blue',
                 #                      rect=(
+                #
                 #                          self.left + self.cell_size * x + 1,
                 #                          self.top + self.cell_size * y + 1,
                 #                          self.cell_size - 2,
                 #                          self.cell_size - 2,
+                #
                 #                      )
                 #                      )
 
@@ -69,6 +75,7 @@ class Board:
 
         try:
             self.on_click(cell)
+
         except TypeError:
             return None
 
@@ -81,6 +88,7 @@ class Sapper(Board):
         self.game_status = True
         self.game_final = False
         self.max_bomb = max_bomb
+        self.score = 0
 
         self.reset_board()
 
@@ -105,23 +113,35 @@ class Sapper(Board):
         super().render()
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
+
                 if 10 > self.board[y][x] >= 0:
                     self.screen.blit(self.font.render(str(self.board[y][x]), True, (255, 255, 255)),
                                      (self.left + self.cell_size * x + 1, self.top + self.cell_size * y + 1))
+
                 if self.board[y][x] == -1:
                     close_count += 1
 
         if close_count == 0:
             self.game_status = False
             self.game_final = True
+            self.score = len(self.board) * len(self.board[0])
 
     def open_cell(self, mouse_pos):
         try:
             x, y = self.get_cell(mouse_pos)
+
             try:
                 self.open_neighbor(x, y)
             except AssertionError:
                 self.game_status = False
+
+                for i in range(len(self.board)):
+                    for j in range(len(self.board[i])):
+
+                        if 0 <= self.board[i][j] < 10:
+                            self.score += 1
+                            print(self.board[i][j], end=' ')
+
         except TypeError:
             print('error')
 
@@ -149,28 +169,59 @@ class Sapper(Board):
     def check_cell(self, x, y):
         if self.board[y][x] == 10:
             raise AssertionError
+
         cells = 0
+
         for i in range(-1, 2):
             for j in range(-1, 2):
+
                 try:
                     assert y + i >= 0 and x + j >= 0
+
                     if (i, j) == (0, 0):
                         continue
+
                     if self.board[y + i][x + j] == 10:
                         cells += 1
                 except AssertionError:
                     continue
+
                 except IndexError:
                     continue
+
         return cells
 
 
+class Smile(pygame.sprite.Sprite):
+    image = load_image(r'smile\frame_0_delay-0.2s.png')
+
+    def __init__(self, *groups):
+        super().__init__(*groups)
+        self.rect = self.image.get_rect()
+
+        self.rect.x = 100
+        self.rect.y = 300
+
+        self.frame = 0
+
+    def update(self):
+        self.image = load_image(rf'smile\frame_{str(self.frame)}_delay-0.2s.png')
+        self.frame += 1
+
+        if self.frame == 6:
+            self.frame = 0
+
+
 def game(surface, bomb):
+    all_sprites = pygame.sprite.Group()
+
     n = 12
     max_bomb = bomb
 
     sapper_game = Sapper(surface, n, n, max_bomb)
     sapper_game.set_view(50, 50, 250 // n)
+
+    smile = Smile(all_sprites)
 
     clock = pygame.time.Clock()
     running = True
@@ -182,10 +233,13 @@ def game(surface, bomb):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 sapper_game.open_cell(event.pos)
 
+        all_sprites.update()
+
         if not sapper_game.game_status:
-            return sapper_game.game_final
+            return sapper_game.game_final, sapper_game.score
 
         surface.fill('black')
         sapper_game.render()
+        all_sprites.draw(surface)
         pygame.display.update()
         clock.tick(FPS)

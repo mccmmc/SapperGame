@@ -11,7 +11,7 @@ class Easy(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         self.rect.x = 91
-        self.rect.y = 130
+        self.rect.y = 130 + 20
 
         self.max_bomb = 0
 
@@ -29,7 +29,7 @@ class Medium(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         self.rect.x = 91
-        self.rect.y = 184
+        self.rect.y = 184 + 20
 
         self.max_bomb = 0
 
@@ -47,7 +47,7 @@ class Hard(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         self.rect.x = 91
-        self.rect.y = 238
+        self.rect.y = 238 + 20
 
         self.max_bomb = 0
 
@@ -71,8 +71,10 @@ def main_menu(surface):
     for line in intro_text:
         string_rendered = font_obj.render(line, 1, pygame.Color('black'))
         intro_rect = string_rendered.get_rect()
+
         text_coord += 5
         intro_rect.top = text_coord
+
         intro_rect.x = 5
         text_coord += intro_rect.height
         surface.blit(string_rendered, intro_rect)
@@ -88,12 +90,14 @@ def main_menu(surface):
 
     while running:
         for event in pygame.event.get():
+
             if event.type == pygame.QUIT:
                 terminate()
 
             all_sprites.update(event)
 
         for i in [easy, medium, hard]:
+
             if i.max_bomb != 0:
                 return i.max_bomb
 
